@@ -1,0 +1,4 @@
+import LeadViewer from '../components/LeadViewer';
+export default function Home() {
+  return <LeadViewer />;
+}
