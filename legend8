@@ -1,0 +1,45 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+export default function ViewSavedLeads() {
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSavedLeads = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+    if (error) console.error("Error fetching saved leads:", error);
+    else setLeads(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchSavedLeads();
+  }, []);
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">📁 Saved Leads in Supabase</h1>
+      <Button onClick={fetchSavedLeads} disabled={loading}>
+        {loading ? "Refreshing..." : "Refresh Saved Leads"}
+      </Button>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        {leads.map((lead, index) => (
+          <Card key={lead.id || index} className="rounded-2xl shadow p-4">
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-1">{lead.name}</h2>
+              <p className="text-sm text-gray-700">📍 {lead.address}</p>
+              <p className="text-sm text-gray-700">📞 {lead.phone}</p>
+              <p className="text-sm text-blue-600 truncate">
+                🌐 <a href={lead.website} target="_blank" rel="noopener noreferrer">{lead.website}</a>
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
