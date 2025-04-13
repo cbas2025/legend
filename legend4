@@ -1,0 +1,22 @@
+import scrapeAttFiberHouston from '../../scripts/scrapeAttFiberHouston';
+import { supabase } from '../../lib/supabase';
+
+export default async function handler(req, res) {
+  try {
+    const leads = await scrapeAttFiberHouston();
+    for (const lead of leads) {
+      await supabase.from('leads').insert([
+        {
+          name: lead.name,
+          address: lead.address,
+          phone: lead.phone,
+          website: lead.website,
+        }
+      ]);
+    }
+    res.status(200).json({ leads });
+  } catch (error) {
+    console.error('Scraping error:', error);
+    res.status(500).json({ message: 'Failed to fetch leads' });
+  }
+}
