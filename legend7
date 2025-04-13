@@ -1,0 +1,45 @@
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function LeadViewer() {
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchLeads = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/fetch-leads");
+      const data = await res.json();
+      setLeads(data.leads || []);
+    } catch (err) {
+      console.error("Failed to fetch leads", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">AT&T Fiber Leads – Houston</h1>
+      <Button onClick={fetchLeads} disabled={loading}>
+        {loading ? "Fetching..." : "Fetch Leads Automatically"}
+      </Button>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        {leads.map((lead, index) => (
+          <Card key={index} className="rounded-2xl shadow p-4">
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-1">{lead.name}</h2>
+              <p className="text-sm text-gray-700">📍 {lead.address}</p>
+              <p className="text-sm text-gray-700">📞 {lead.phone}</p>
+              <p className="text-sm text-blue-600 truncate">
+                🌐 <a href={lead.website} target="_blank" rel="noopener noreferrer">{lead.website}</a>
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
