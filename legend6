@@ -1,0 +1,4 @@
+import ViewSavedLeads from '../components/ViewSavedLeads';
+export default function View() {
+  return <ViewSavedLeads />;
+}
